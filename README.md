@@ -2,7 +2,7 @@
 
 Installation
 
-Before installing haplovalidate you need to make sure that all the dependencies are available. Please make sure to get latest haploReconstruct from github https://github.com/popgenvienna/haploReconstruct
+Before installing haplovalidate you need to make sure that all the dependencies are available. Please make sure to get the latest haploReconstruct from github https://github.com/popgenvienna/haploReconstruct
 
      R (>= 3.6.0)
      psych (>= 1.8.12)
