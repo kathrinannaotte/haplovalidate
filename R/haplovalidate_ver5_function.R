@@ -113,6 +113,10 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom,filterrange)
                         }
                     }
                 }
+                else{
+                    print(paste("chr",a,"corr",unique(alreadythere$corr)))
+                    print(paste("found ", length(unique(alreadythere$clust)), " clusters", sep = ""))
+                }           
                 ## ### clusters found on both chromosomes?
                 ids <- cluster.snps[, .(chr, corr, clust)]
                 taggis <- apply(ids, 1, paste, collapse = "_")
@@ -198,74 +202,69 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom,filterrange)
 ### only perform when you have some values, fisher transform for
 ### normality
                     }
-                }
-                if (length(corfoc) > 3 & length(corcomp) > 3) {
-                    t <- t.test(fisherz(corfoc), fisherz(corcomp), "greater")
-                    p <- t$p.value
-                    print(paste(" pval ", round(p, 4), " for chr ", a, sep = ""))
+                    if (length(corfoc) > 3 & length(corcomp) > 3) {
+                        t <- t.test(fisherz(corfoc), fisherz(corcomp), "greater")
+                        p <- t$p.value
+                        print(paste(" pval ", round(p, 4), " for chr ", a, sep = ""))
 ### not if pvalue threshold was at least crossed once (because I want to
 ### see the threshold)
-                    if (p <= thres.ttest) {
-                        old.cl.cor <- min.cl.cor
-                        if (raw & search == F) {
-                            min.cl.cor <- min.cl.cor - rawsteps
-                            noT <- F
+                        if (p <= thres.ttest) {
+                            old.cl.cor <- min.cl.cor
+                            if (raw & search == F) {
+                                min.cl.cor <- min.cl.cor - rawsteps
+                                noT <- F
+                            } else {
+                                min.cl.cor <- min.cl.cor - finesteps
+                                raw <- FALSE
+                                noT <- F
+                            }
                         } else {
-                            min.cl.cor <- min.cl.cor - finesteps
-                            raw <- FALSE
-                            noT <- F
-                        }
-                    } else {
-                        if (raw & noT == F) {
-                            raw <- F
-                            min.cl.cor <- min.cl.cor + rawsteps - finesteps
-                        } else {
-                            if (raw == F & noT == F) {
-                                print("Normal")
-                                clusteron <- FALSE
-                                successful <- TRUE
-                                cluster.final.sub<-  cluster.snps[corr == old.cl.cor &chr == a]
-                                final <- rbind(final, cluster.final.sub)
-                                print(paste("chr ", a, " done", sep = ""))
+                            if (raw & noT == F) {
+                                raw <- F
+                                min.cl.cor <- min.cl.cor + rawsteps - finesteps
+                            } else {
+                                if (raw == F & noT == F) {
+                                    print("Success!")
+                                    clusteron <- FALSE
+                                    successful <- TRUE
+                                    cluster.final.sub<-  cluster.snps[corr == old.cl.cor &chr == a]
+                                    final <- rbind(final, cluster.final.sub)
+                                    print(paste("chr ", a, " done", sep = ""))
+                                }
+                            }
+                            if (raw & noT) {
+                                min.cl.cor <- min.cl.cor + finesteps
+                                search <- T
                             }
                         }
-                        if (raw & noT) {
-                            min.cl.cor <- min.cl.cor + finesteps
-                            search <- T
+                    } else {
+                        if (search) {
+                            print(paste("chr ", a, " done; no  threshold!", sep = ""))
+                            clusteron <- FALSE
+                            print(paste("chr ", a, " done", sep = ""))
+                        } else {
+                            if (noT) 
+                                min.cl.cor <- min.cl.cor + finesteps else min.cl.cor <- min.cl.cor - finesteps
                         }
                     }
-                } else {
-                    if (search) {
-                        print("search")
+                    if (min.cl.cor < 0.1 | min.cl.cor > 1) {
                         clusteron <- FALSE
                         successful <- TRUE
-                        final.raw <-  cluster.snps[corr == old.cl.cor &chr == a, `:=`(tag, paste(tag,"_search", sep = ""))]
-                        final <- rbind(final, final.raw)
-                        print(paste("chr ", a, " done", sep = ""))
-                    } else {
-                        if (noT) 
-                            min.cl.cor <- min.cl.cor + finesteps else min.cl.cor <- min.cl.cor - finesteps
+                        print(paste("chr ", a, " done; no  convergence!", sep = ""))
                     }
                 }
-                if (min.cl.cor < 0.1 | min.cl.cor > 1) {
+                else{
                     clusteron <- FALSE
-                    successful <- TRUE
-                    final.raw <-  cluster.snps[corr == old.cl.cor &chr == a, `:=`(tag, paste(tag,"_no_conv", sep = ""))]
-                    final <- rbind(final, final.raw[chr == a])
-                    print(paste("chr ", a, " done; no  convergence!", sep = ""))
+                    print(paste("chr ", a, " done", sep = ""))
+                    print("haplotype reconstruction not possible")
                 }
             }
         }
     }
-
-    final[,pos:=as.numeric(pos)]
-    hapval.result[["all_haplotypes"]] <- final
-    red <- list()
-    if (final != "clustering impossible") {
-        corris <- unique(final[, .(chr, corr)])[, corr]
-        finish <- unique(str_extract(final[, tag], "no_.*"))
-        if (length(finish) == 1) 
-            finish <- rep(finish, 2)
+    if (length(final)>0){
+        final[,pos:=as.numeric(pos)]
+        hapval.result[["all_haplotypes"]] <- final
+        red <- list()
         cands.cmh <- merge(cands, cmh, by = c("chr", "pos"))
         datcmh <- merge(final, cands.cmh, by = c("chr", "pos"), all = T)
         datcmh.ord <- datcmh[order(score, decreasing = T)]
