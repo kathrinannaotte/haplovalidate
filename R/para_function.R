@@ -11,8 +11,9 @@ get.mncs.win <- function(cands,cmh,wins,wincut){
     parameters <- c()
     for (c in unique(cands$chr)){
         scorewin[chr==c,score.sum:=V1/sum(as.numeric(snp.cmh[chr==c,score]))]
-        cutoff<- scorewin[chr==c,median(score.sum),by=k]
-        win <- cutoff[V1>=wincut,k][1]
+        cutoff<- scorewin[chr==c,quantile(score.sum,0.5),by=k]
+        cutoff.ord <- cutoff[order(V1)]
+        win <- cutoff.ord[V1>=wincut,k][1]
         parameters <- rbind(parameters,c(c,win))
     }
     colnames(parameters) <- c("chr","win")

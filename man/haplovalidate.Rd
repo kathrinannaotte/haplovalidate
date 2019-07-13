@@ -3,7 +3,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Validate reconstructed haplotypes}
 %%  ~~function to do ... ~~
-}
+
 \description{under consrtruction
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
