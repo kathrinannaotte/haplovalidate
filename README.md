@@ -1,6 +1,6 @@
-# haplovalidate
+## haplovalidate
 
-Installation
+#Installation
 
 Before installing haplovalidate you need to make sure that all the dependencies are available. Please make sure to get the latest haploReconstruct from github https://github.com/popgenvienna/haploReconstruct
 
@@ -13,34 +13,30 @@ Before installing haplovalidate you need to make sure that all the dependencies 
 
 For now you need to install these manually. Once this is done you can proceed by downloading the latest release of haplovalidate. After the download you can install haplovalidate with the following R command:
 
-install.packages("/Path/To/haplovalidate_0.1.0.tar.gz", repos=NULL, type="source")
+     install.packages("/Path/To/haplovalidate_0.1.0.tar.gz", repos=NULL, type="source")
 
-Usage
+#Usage
 
-##install.packages("../haplovalidate_0.1.1.tar.gz",type="source",repos=NULL)
+     ##install.packages("../haplovalidate_0.1.1.tar.gz",type="source",repos=NULL)
 
-library(haplovalidate)
+     library(haplovalidate)
 
-repl <- 1:5
-gens <- c(0,15,37,59)
+     repl <- 1:5
+     gens <- c(0,15,37,59)
 
-## base.pops <- c(rep(TRUE, length(repl)),rep(FALSE,length(repl)*(length(gens)-1)))
-## polaRise = list(c(1,26),c(2,27),c(3,28),c(4,29),c(5,30)) 
-## cands <- sync_to_frequencies(syncfile,base.pops=base.pops,header=FALSE,mincov=15,polaRise = polaRise)
+     ## base.pops <- c(rep(TRUE, length(repl)),rep(FALSE,length(repl)*(length(gens)-1)))
+     ## polaRise = list(c(1,26),c(2,27),c(3,28),c(4,29),c(5,30)) 
+     ## cands <- sync_to_frequencies(syncfile,base.pops=base.pops,header=FALSE,mincov=15,polaRise = polaRise)
 
-cands <- readRDS("candidates.rds")
+     cands <- readRDS("candidates.rds")
 
-cmh <- readRDS("cmh.rds")
-## columns chr(=chromosome), pos(=position) and (cmh) score needed
+     cmh <- readRDS("cmh.rds")
+     ## columns chr(=chromosome), pos(=position) and (cmh) score needed
 
+     parameters <- get.mncs.win(cands,cmh,wins=seq(0.1,10,0.05),wincut=0.01)
+     print(parameters)
 
+     happy <- haplovalidate(cands,cmh,parameters,repl,gens,takerandom=2000,filterrang=5000)
 
-
-
-parameters <- get.mncs.win(cands,cmh,wins=seq(0.1,10,0.05),wincut=0.01)
-
-print(parameters)
-happy <- haplovalidate(cands,cmh,parameters,repl,gens,takerandom=2000,filterrang=5000)
-
-plot.haplovalidate(blocks=happy$dominant_haplotypes,cmh,title="port",label=F)
+     plot.haplovalidate(blocks=happy$dominant_haplotypes,cmh,title="port",label=F)
 
