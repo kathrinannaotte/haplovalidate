@@ -1,5 +1,4 @@
-
-
+#' @export
 get.mncs.win <- function(cands,cmh,wins,wincut){
     snp.cmh <- merge(cands,cmh,by=c("chr","pos"))
     scorewin <- c()

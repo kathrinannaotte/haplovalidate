@@ -1,5 +1,6 @@
+#' @import haploReconstruct
 
-
+#' @export
 haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom,filterrange){
 
     base.pops <- c(rep(TRUE, length(repl)), rep(FALSE, length(repl) * (length(gens) -  1)))

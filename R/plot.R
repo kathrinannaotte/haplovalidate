@@ -1,5 +1,6 @@
+#' @ import RColorBrewer brewer.pal colorRampPalette
 
-
+#' @export
  plot.haplovalidate<- function(blocks,cmh,title="",label=TRUE){
      neuefarbe.raw <- unique(c(brewer.pal(8,"Set1"),brewer.pal(7,"Dark2"),brewer.pal(7,"Set2"),brewer.pal(12,"Set3"),brewer.pal(12,"Paired"),brewer.pal(7,"Accent"),brewer.pal(7,"Spectral")))
      neuefarbe  <- colorRampPalette(neuefarbe.raw)(max(as.numeric(factor(blocks$tag)),na.rm=TRUE))
