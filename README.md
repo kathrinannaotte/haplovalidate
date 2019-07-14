@@ -1,6 +1,6 @@
-## haplovalidate
+# haplovalidate
 
-#Installation
+## Installation
 
 Before installing haplovalidate you need to make sure that all the dependencies are available. Please make sure to get the latest haploReconstruct from github https://github.com/popgenvienna/haploReconstruct
 
@@ -15,9 +15,9 @@ For now you need to install these manually. Once this is done you can proceed by
 
      install.packages("/Path/To/haplovalidate_0.1.0.tar.gz", repos=NULL, type="source")
 
-#Usage
+## Usage
 
-     ##install.packages("../haplovalidate_0.1.1.tar.gz",type="source",repos=NULL)
+     ## install.packages("../haplovalidate_0.1.1.tar.gz",type="source",repos=NULL)
 
      library(haplovalidate)
 
