@@ -29,6 +29,7 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom,filterrange)
     chromis <- unique(cands$chr)
     final <- c()
     hapval.result <- list()
+    af.cols <- grep("L",colnames(cands))
     if (length(chromis) > 1) {
         cluster.snps <- c()
         for (chromo in chromis) {
@@ -36,7 +37,7 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom,filterrange)
             ts <- initialize_SNP_time_series(chr = cands[chr == chromo,chr],
                                              pos = cands[chr == chromo, pos],
                                              base.freq = cands[chr == chromo, basePops],
-                                             lib.freqs = cands[chr == chromo, 7:(ncol(cands)), with = F],
+                                             lib.freqs = cands[chr == chromo, af.cols, with = F],
                                              pop.ident = c(rep(repl,each = length(gens))), pop.generation = rep(gens, length(repl)), 
                                              use.libs = compare, min.minor.freq = min.minor.freq, max.minor.freq = max.minor.freq, 
                                              winsize = winsize, win.scale = "bp", min.lib.frac = min.lib.frac, 
@@ -90,7 +91,7 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom,filterrange)
                         ts <- initialize_SNP_time_series(chr = cands[chr == 
                                                                      b, chr], pos = cands[chr == b, pos], base.freq = cands[chr == 
                                                                                                                             b, basePops], lib.freqs = cands[chr == b, 
-                                                                                                                                                            7:(ncol(cands)), with = F], pop.ident = c(rep(repl, 
+                                                                                                                                                            af.cols, with = F], pop.ident = c(rep(repl, 
                                                                                                                                                                                                           each = length(gens))), pop.generation = rep(gens, length(repl)), 
                                                          use.libs = compare, min.minor.freq = min.minor.freq, 
                                                          max.minor.freq = max.minor.freq, winsize = winsize, 
@@ -264,7 +265,7 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom,filterrange)
     }
     if (length(final)>0){
         final[,pos:=as.numeric(pos)]
-        hapval.result[["all_haplotypes"]] <- final
+        hapval.result[["all_haplotypes"]] <- final[,.(chr,pos,tag)]
         red <- list()
         cands.cmh <- merge(cands, cmh, by = c("chr", "pos"))
         datcmh <- merge(final, cands.cmh, by = c("chr", "pos"), all = T)
@@ -281,7 +282,7 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom,filterrange)
         }
         mergomat <- datcmh.ord[, .(chr, pos, score, tag)]
         mergomat.final <- mergomat[is.na(tag) == F]
-        hapval.result[["dominant_haplotypes"]] <- mergomat.final
+        hapval.result[["dominant_haplotypes"]] <- mergomat.final[,.(chr,pos,tag)]
     }
     return(hapval.result)
 }

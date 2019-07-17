@@ -8,7 +8,7 @@
     col.sub <- neuefarbe[as.numeric(factor(blocks$tag))]
     blocks[,groupcol := col.sub]
         for (j in unique(blocks$chr)){
-            cluster.sub <- blocks[chr==j,]
+            cluster.sub <- merge(blocks[chr==j,],cmh,by=c("chr","pos"))
             png(paste(title,"_",j,"_haplovalidate.png",sep=""),2400,1200)
             maxy <- round(max(as.numeric(cmh[chr==j,score]),na.rm=TRUE),-1) + round(max(as.numeric(cmh[chr==j,score]),na.rm=TRUE),-1) * 0.05
             cmh[chr==j,plot(pos/1000000,as.numeric(score),pch=19,col="#414547",ylim=c(0,maxy),xlab="position Mb",ylab="cmh score",lwd=3,cex.axis=1.5,cex.lab=2,main=title,xaxp=c(0,50,50))]

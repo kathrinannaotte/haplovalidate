@@ -1,7 +1,7 @@
 Package: haplovalidate
 Type: Package
 Title: A generalised approach to detect selected haplotype blocks in Evolve and Resequence experiments
-Version: 0.1.1
+Version: 0.1.2
 Author: Kathrin A Otte
 Maintainer: Kathrin A Otte <kathrin.anna.otte@gmail.com>
 Description: Haplovalidate an extension of the R package haploReconstruct (Franssen et al., 2016), and detects selected haplotypes in a broad range of Pool-Seq time series data. Haplovalidate makes data-driven choices of key parameters for the clustering procedure.  For more details see otte et al. bioRxiv
