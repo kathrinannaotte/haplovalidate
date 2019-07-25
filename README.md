@@ -40,3 +40,11 @@ For now you need to install these manually. Once this is done you can proceed by
 
      plot.haplovalidate(blocks=happy$dominant_haplotypes,cmh,title="port",label=F)
 
+## Citations
+
+Kathrin A. Otte, Christian Schlötterer
+A generalised approach to detect selected haplotype blocks in Evolve and Resequence experiments
+bioRxiv 691659; doi: https://doi.org/10.1101/691659
+
+Susanne U. Franssen, Nicholas H. Barton, Christian Schlötterer, Reconstruction of Haplotype-Blocks Selected during Experimental Evolution, Molecular Biology and Evolution, Volume 34, Issue 1, January 2017, Pages 174–184, https://doi.org/10.1093/molbev/msw210
+
