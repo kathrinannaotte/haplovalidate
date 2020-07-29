@@ -16,9 +16,10 @@ For now you need to install these manually. Once this is done you can proceed by
      install.packages("/Path/To/haplovalidate_0.1.0.tar.gz", repos=NULL, type="source"
      
 ## Input Data
-You need an object containing your allele frequencies in haploreconstruct format, which is created from a sync file.
+You need an object containing your allele frequencies in haploReconstruct format, which is created from a sync file.
    
-    library(haploReconstruct)  ## make sure to load version v0.1.3_3 from https://github.com/popgenvienna/haploReconstruct
+    ## make sure to load version v0.1.3_3 from https://github.com/popgenvienna/haploReconstruct
+    library(haploReconstruct)  
     
     repl <- 1:5
     gens <- c(0,15,37,59)
@@ -32,8 +33,8 @@ You need an object containing your allele frequencies in haploreconstruct format
     ### load frequency data
     cands.all <- sync_to_frequencies(syncfile,base.pops=base.pops,header=FALSE,mincov=15,polaRise = polaRise)
    
-You also need an object with the results of a CMH-Test (for a method incoprorating genetic drift and poolSeq noise see https://github.com/popgenvienna/ACER)
-The object sould be a data.frame or data.table containing chromosome and position (matching the candidates) and the corresponding CMH score (-log10(p-value))
+You also need an object with the results of a CMH-Test (for a method incoprorating genetic drift and poolSeq noise see https://github.com/popgenvienna/ACER).
+The object sould be a data.frame or data.table object containing chromosome and position (matching the candidates) and the corresponding CMH score (-log10(p-value))
  
     ## column names should be chr, pos and score 
     cmh <- readRDS("cmh.rds") 
@@ -41,7 +42,7 @@ The object sould be a data.frame or data.table containing chromosome and positio
 You need to filter for SNPs with a significant allele frequency change
 
     cmh05 <- cmh[score< 1.3,.(chr,pos)] ## p-value < 0.05 
-    cands <- merge(cands,cmh05,by=.(chr,pos))
+    cands <- merge(cands.all,cmh05,by=.(chr,pos))
     saveRDS(cands,"cands.rds")
     
 ## Usage
@@ -59,10 +60,10 @@ You need to filter for SNPs with a significant allele frequency change
      print(parameters)
 
      ## run haplovalidate
-     happy <- haplovalidate(cands,cmh,parameters,repl,gens,takerandom=2000,filterrang=5000)
+     happy <- haplovalidate(cands,cmh,parameters,repl,gens,takerandom=2000,filterrange=5000)
 
      ## overview plot
-     plot.haplovalidate(blocks=happy$dominant_haplotypes,cmh,title="port",label=F)
+     plot.haplovalidate(blocks=happy$dominant_haplotypes,cmh,title="My beautiful haplotype blocks",label=F)
      
 
 ## Citations
