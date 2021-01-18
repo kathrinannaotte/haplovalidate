@@ -2,7 +2,7 @@
 
 ## Installation
 
-Before installing haplovalidate you need to make sure that all the dependencies are available. Please make sure to get the latest haploReconstruct from github https://github.com/popgenvienna/haploReconstruct
+Before installing haplovalidate you need to make sure that all the dependencies are available. Please make sure to get the latest haploReconstruct from github https://github.com/popgenvienna/haploReconstruct . Haplovalidate will NOT WORK with the current CRAN haploreconstruct version 0.1.2 . 
 
      R (>= 3.6.0)
      psych (>= 1.8.12)
@@ -13,7 +13,7 @@ Before installing haplovalidate you need to make sure that all the dependencies 
 
 For now you need to install these manually. Once this is done you can proceed by downloading the latest release of haplovalidate. After the download you can install haplovalidate with the following R command:
 
-     install.packages("/Path/To/haplovalidate_0.1.0.tar.gz", repos=NULL, type="source"
+     install.packages("/Path/To/haplovalidate_x.x.x.tar.gz", repos=NULL, type="source"
      
 ## Input Data
 You need an object containing your allele frequencies in haploReconstruct format, which is created from a sync file.
@@ -47,7 +47,7 @@ You need to filter for SNPs with a significant allele frequency change
     
 ## Usage
 
-     ## install.packages("../haplovalidate_0.1.2.tar.gz",type="source",repos=NULL)
+     ## install.packages("../haplovalidate_x.x.x.tar.gz",type="source",repos=NULL)
 
      library(haplovalidate)
 
@@ -56,7 +56,7 @@ You need to filter for SNPs with a significant allele frequency change
      cmh <- readRDS("cmh.rds")
 
      ## get haplovalidate parameters
-     parameters <- get.mncs.win(cands,cmh,wins=seq(0.1,10,0.05),wincut=0.01)
+     parameters <- get.mncs.win(cands,cmh,wins=seq(0.1,10,0.05),mncs=0.01)
      print(parameters)
 
      ## run haplovalidate
