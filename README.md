@@ -13,7 +13,6 @@ Before installing haplovalidate you need to make sure that all the dependencies 
 
 For now you need to install these manually. Once this is done you can proceed by downloading the latest release of haplovalidate. After the download you can install haplovalidate with the following R command:
 
-## Usage
 
         install.packages("/Path/To/haplovalidate_x.x.x.tar.gz", repos=NULL, type="source"
      
