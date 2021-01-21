@@ -64,8 +64,6 @@ You need to filter for SNPs with a significant allele frequency change
      cmh <- readRDS("cmh.rds")
      ## columns chr(=chromosome), pos(=position) and (cmh) score needed
 
-
-=======
      ## get haplovalidate parameters
      parameters <- get.mncs.win(cands,cmh,wins=seq(0.1,10,0.05),mncs=0.01)
      print(parameters)
