@@ -13,9 +13,6 @@ Before installing haplovalidate you need to make sure that all the dependencies 
 
 For now you need to install these manually. Once this is done you can proceed by downloading the latest release of haplovalidate. After the download you can install haplovalidate with the following R command:
 
-<<<<<<< HEAD
-     install.packages("/Path/To/haplovalidate_0.1.0.tar.gz", repos=NULL, type="source")
-
 ## Usage
 
      ## install.packages("../haplovalidate_0.1.1.tar.gz",type="source",repos=NULL)
@@ -55,7 +52,6 @@ You need to filter for SNPs with a significant allele frequency change
 ## Usage
 
      ## install.packages("../haplovalidate_x.x.x.tar.gz",type="source",repos=NULL)
->>>>>>> ffd1eae4d3420e5dc9f386cdb956282c62d8fdf3
 
      library(haplovalidate)
 
@@ -71,12 +67,10 @@ You need to filter for SNPs with a significant allele frequency change
      cmh <- readRDS("cmh.rds")
      ## columns chr(=chromosome), pos(=position) and (cmh) score needed
 
-<<<<<<< HEAD
-     parameters <- get.mncs.win(cands,cmh,wins=seq(0.1,10,0.05),wincut=0.01)
+
 =======
      ## get haplovalidate parameters
      parameters <- get.mncs.win(cands,cmh,wins=seq(0.1,10,0.05),mncs=0.01)
->>>>>>> ffd1eae4d3420e5dc9f386cdb956282c62d8fdf3
      print(parameters)
 
      happy <- haplovalidate(cands,cmh,parameters,repl,gens,takerandom=2000,filterrang=5000)
