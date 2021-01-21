@@ -15,9 +15,7 @@ For now you need to install these manually. Once this is done you can proceed by
 
 ## Usage
 
-     ## install.packages("../haplovalidate_0.1.1.tar.gz",type="source",repos=NULL)
-=======
-     install.packages("/Path/To/haplovalidate_x.x.x.tar.gz", repos=NULL, type="source"
+        install.packages("/Path/To/haplovalidate_x.x.x.tar.gz", repos=NULL, type="source"
      
 ## Input Data
 You need an object containing your allele frequencies in haploReconstruct format, which is created from a sync file.
