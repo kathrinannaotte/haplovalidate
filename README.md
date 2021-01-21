@@ -2,7 +2,7 @@
 
 ## Installation
 
-Before installing haplovalidate you need to make sure that all the dependencies are available. Please make sure to get the latest haploReconstruct from github https://github.com/popgenvienna/haploReconstruct
+Before installing haplovalidate you need to make sure that all the dependencies are available. Please make sure to get the latest haploReconstruct from github https://github.com/popgenvienna/haploReconstruct . Haplovalidate will NOT WORK with the current CRAN haploreconstruct version 0.1.2 . 
 
      R (>= 3.6.0)
      psych (>= 1.8.12)
@@ -13,11 +13,49 @@ Before installing haplovalidate you need to make sure that all the dependencies 
 
 For now you need to install these manually. Once this is done you can proceed by downloading the latest release of haplovalidate. After the download you can install haplovalidate with the following R command:
 
+<<<<<<< HEAD
      install.packages("/Path/To/haplovalidate_0.1.0.tar.gz", repos=NULL, type="source")
 
 ## Usage
 
      ## install.packages("../haplovalidate_0.1.1.tar.gz",type="source",repos=NULL)
+=======
+     install.packages("/Path/To/haplovalidate_x.x.x.tar.gz", repos=NULL, type="source"
+     
+## Input Data
+You need an object containing your allele frequencies in haploReconstruct format, which is created from a sync file.
+   
+    ## make sure to load version v0.1.3_3 from https://github.com/popgenvienna/haploReconstruct
+    library(haploReconstruct)  
+    
+    repl <- 1:5
+    gens <- c(0,15,37,59)
+    
+    ### define which columns of the sync file contain the base population
+    base.pops <- c(rep(TRUE, length(repl)),rep(FALSE,length(repl)*(length(gens)-1)))
+    
+    ### define which columns should be used to polarize for the rising allele (e.g. list(c(F0Rep1,F59Rep1),c(F0Rep2,F59Rep2),...))
+    polaRise = list(c(1,26),c(2,27),c(3,28),c(4,29),c(5,30)) 
+    
+    ### load frequency data
+    cands.all <- sync_to_frequencies(syncfile,base.pops=base.pops,header=FALSE,mincov=15,polaRise = polaRise)
+   
+You also need an object with the results of a CMH-Test (for a method incoprorating genetic drift and poolSeq noise see https://github.com/popgenvienna/ACER).
+The object sould be a data.frame or data.table object containing chromosome and position (matching the candidates) and the corresponding CMH score (-log10(p-value))
+ 
+    ## column names should be chr, pos and score 
+    cmh <- readRDS("cmh.rds") 
+    
+You need to filter for SNPs with a significant allele frequency change
+
+    cmh05 <- cmh[score< 1.3,.(chr,pos)] ## p-value < 0.05 
+    cands <- merge(cands.all,cmh05,by=.(chr,pos))
+    saveRDS(cands,"cands.rds")
+    
+## Usage
+
+     ## install.packages("../haplovalidate_x.x.x.tar.gz",type="source",repos=NULL)
+>>>>>>> ffd1eae4d3420e5dc9f386cdb956282c62d8fdf3
 
      library(haplovalidate)
 
@@ -33,7 +71,12 @@ For now you need to install these manually. Once this is done you can proceed by
      cmh <- readRDS("cmh.rds")
      ## columns chr(=chromosome), pos(=position) and (cmh) score needed
 
+<<<<<<< HEAD
      parameters <- get.mncs.win(cands,cmh,wins=seq(0.1,10,0.05),wincut=0.01)
+=======
+     ## get haplovalidate parameters
+     parameters <- get.mncs.win(cands,cmh,wins=seq(0.1,10,0.05),mncs=0.01)
+>>>>>>> ffd1eae4d3420e5dc9f386cdb956282c62d8fdf3
      print(parameters)
 
      happy <- haplovalidate(cands,cmh,parameters,repl,gens,takerandom=2000,filterrang=5000)
