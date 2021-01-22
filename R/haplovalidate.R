@@ -3,7 +3,7 @@
 
 
 
-haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom,filterrange){
+haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom=2000,filterrange=5000){
 
     base.pops <- c(rep(TRUE, length(repl)), rep(FALSE, length(repl) * (length(gens) -  1)))
     compare <- c(rep(rep(TRUE, length(gens)), length(repl)))
@@ -16,10 +16,12 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom,filterrange)
     thres.ttest <- 0.025
     min.cl.size <- 20
     min.inter <- ceiling(min.cl.size/5)
-### how many iterations for scanning the threshold when start p is > thres.ttest
-    findthreshold <- 5
-
-    
+    ####add this parameters to the function for more user freedom?
+    findthreshold=10
+    cor.low=0.3
+    cor.high=0.9
+    rawsteps=0.1
+    finesteps=0.01
 ###functions
     ##asin sqrt transform allele frequency for normality 
     transform.af <- function(af) {
@@ -73,7 +75,7 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom,filterrange)
         cluster.snps <- c()
         for (chromo in chromis) {
             ts <- ts.filter[[chromo]]
-            for (c in rev(seq(0.3, 0.9, 0.1))) {
+            for (c in rev(seq(cor.low, cor.high, 0.1))) {
                 print(paste("chr ", chromo, " cluster corr ", c, sep = ""))
                 hbs <- reconstruct_hb(ts, chrom = chromo, min.cl.size = min.cl.size, 
                                       min.cl.cor = c, min.inter = min.inter, single.win = T, 
@@ -97,14 +99,15 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom,filterrange)
         check.cor.raw <- unique(cluster.snps[, .(chr, clust, corr)])
         check.cor.raw <- data.table(check.cor.raw)
         check.cor <- check.cor.raw[, .N, by = .(chr, corr)]
+
         for (a in chromis) {
             ## find corr to start
             check.cor.sub <- check.cor[chr != a & N != 0, corr]
             min.cl.cor <- as.numeric(check.cor[chr == a & corr %in% check.cor.sub, 
                                                corr[which.max(N)]])
             ## step parameters for raw and fine comparison
-            rawsteps <- 0.05
-            finesteps <- 0.01
+            ## rawsteps <- 0.05
+            ## finesteps <- 0.01
             ## ## objects needed for comparison
             clusteron <- TRUE
             noT <- TRUE
@@ -225,13 +228,13 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom,filterrange)
                             p <- 1
                         old.cl.cor <- min.cl.cor
                         if (p <= thres.ttest){
-                            if (raw & search == F) {
+                            if (raw) {
                                 min.cl.cor <- min.cl.cor - rawsteps
                                 noT <- F
                             } else {
                                 min.cl.cor <- min.cl.cor - finesteps
                                 raw <- FALSE
-                                noT <- F
+                                noT <- FALSE
                             }
                         }
                         else {
@@ -249,41 +252,49 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom,filterrange)
                                     print(final)
                                 }
                             }
-                            if (raw & noT) {
-                                min.cl.cor <- min.cl.cor + finesteps
-                                countup <- countup + 1
-                                if (countup > findthreshold )
-                                    search <- T
-                            }
-                        }                    
-                        if (search) {
-                            print(paste("chr ", a, " done; no  threshold!", sep = ""))
-                            clusteron <- FALSE
-                            cluster.final.sub<-  cluster.snps[corr == old.cl.cor &chr == a]
-                            cluster.final.sub[,tag:=paste(tag,"_noThreshold",sep="")]
-                            final <- rbind(final, cluster.final.sub)
-                            
-                            print(paste("chr ", a, " done", sep = ""))
-                        } else {
-                            if (noT==F)
-                                min.cl.cor <- min.cl.cor - finesteps
+                        }
+                        if (raw & noT) {
+                            min.cl.cor <- min.cl.cor + rawsteps
+                            countup <- countup + 1
+                            if (countup > findthreshold )
+                                search <- T
                         }
                     }
-                    if (min.cl.cor < 0.1 | min.cl.cor > 1) {
-                        clusteron <- FALSE
-                        successful <- TRUE
-                        print(paste("chr ", a, " done; no  convergence!", sep = ""))
+                    else{
+                        if (raw) 
+                            min.cl.cor <- min.cl.cor - rawsteps
+                        else 
+                            min.cl.cor <- min.cl.cor - finesteps
                     }
-                }                else{
+                }
+                else{
+                    if (raw) 
+                        min.cl.cor <- min.cl.cor - rawsteps
+                    else 
+                        min.cl.cor <- min.cl.cor - finesteps
+                }
+                if (search) {
+                    print(paste("chr ", a, " done; no  threshold!", sep = ""))
                     clusteron <- FALSE
-                    print(paste("chr ", a, " done", sep = ""))
-                    print("haplotype reconstruction not possible")
+                    cluster.final.sub<-  cluster.snps[corr == old.cl.cor &chr == a]
+                    cluster.final.sub[,tag:=paste(tag,"_noThreshold",sep="")]
+                    final <- rbind(final, cluster.final.sub)
+                }
+                ## else {
+                ##     if (noT==F)
+                ##         min.cl.cor <- min.cl.cor - finesteps
+                ## }
+                if (min.cl.cor <= 0.1 | min.cl.cor >= 1) {
+                clusteron <- FALSE
+                successful <- TRUE
+                print(paste("chr ", a, " done; no  threshold!", sep = ""))
+                cluster.final.sub<-  cluster.snps[corr == old.cl.cor &chr == a]
+                    cluster.final.sub[,tag:=paste(tag,"_noThreshold",sep="")]
+                    final <- rbind(final, cluster.final.sub)
                 }
             }
         }
-
     }
-
     if (length(final)>0){
         final[,pos:=as.numeric(pos)]
         hapval.result[["all_haplotypes"]] <- final[,.(chr,pos,tag)]
@@ -307,3 +318,4 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom,filterrange)
     }
     return(hapval.result)
 }
+

@@ -13,7 +13,8 @@ Before installing haplovalidate you need to make sure that all the dependencies 
 
 For now you need to install these manually. Once this is done you can proceed by downloading the latest release of haplovalidate. After the download you can install haplovalidate with the following R command:
 
-     install.packages("/Path/To/haplovalidate_x.x.x.tar.gz", repos=NULL, type="source"
+
+        install.packages("/Path/To/haplovalidate_x.x.x.tar.gz", repos=NULL, type="source"
      
 ## Input Data
 You need an object containing your allele frequencies in haploReconstruct format, which is created from a sync file.
@@ -51,25 +52,29 @@ You need to filter for SNPs with a significant allele frequency change
 
      library(haplovalidate)
 
-     ## load input data
+     repl <- 1:5
+     gens <- c(0,15,37,59)
+
+     ## base.pops <- c(rep(TRUE, length(repl)),rep(FALSE,length(repl)*(length(gens)-1)))
+     ## polaRise = list(c(1,26),c(2,27),c(3,28),c(4,29),c(5,30)) 
+     ## cands <- sync_to_frequencies(syncfile,base.pops=base.pops,header=FALSE,mincov=15,polaRise = polaRise)
+
      cands <- readRDS("candidates.rds")
+
      cmh <- readRDS("cmh.rds")
+     ## columns chr(=chromosome), pos(=position) and (cmh) score needed
 
      ## get haplovalidate parameters
      parameters <- get.mncs.win(cands,cmh,wins=seq(0.1,10,0.05),mncs=0.01)
      print(parameters)
 
-     ## run haplovalidate
-     happy <- haplovalidate(cands,cmh,parameters,repl,gens,takerandom=2000,filterrange=5000)
+     happy <- haplovalidate(cands,cmh,parameters,repl,gens,takerandom=2000,filterrang=5000)
 
-     ## overview plot
-     plot.haplovalidate(blocks=happy$dominant_haplotypes,cmh,title="My beautiful haplotype blocks",label=F)
+     plot.haplovalidate(blocks=happy$dominant_haplotypes,cmh,title="port",label=F)
      
-
 ## Citations
 
-Kathrin A. Otte, Christian Schlötterer, Detecting selected haplotype blocks in Evolve and
-Resequence experiments, bioRxiv 691659; doi: https://doi.org/10.1101/691659
+Kathrin A. Otte, Christian Schlötterer A generalised approach to detect selected haplotype blocks in Evolve and Resequence experiments bioRxiv 691659; doi: https://doi.org/10.1101/691659
 
 Susanne U. Franssen, Nicholas H. Barton, Christian Schlötterer, Reconstruction of Haplotype-Blocks Selected during Experimental Evolution, Molecular Biology and Evolution, Volume 34, Issue 1, January 2017, Pages 174–184, https://doi.org/10.1093/molbev/msw210
 
