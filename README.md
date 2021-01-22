@@ -70,11 +70,11 @@ You need to filter for SNPs with a significant allele frequency change
 
      happy <- haplovalidate(cands,cmh,parameters,repl,gens,takerandom=2000,filterrang=5000)
 
-     plot.haplovalidate(blocks=happy$dominant_haplotypes,cmh,title="port",label=F)
+     plot.haplovalidate(blocks=happy$dominant_haplotypes,cmh,title="My beautiful haplotype blocks",label=TRUE)
      
 ## Citations
 
-Kathrin A. Otte, Christian Schlötterer A generalised approach to detect selected haplotype blocks in Evolve and Resequence experiments bioRxiv 691659; doi: https://doi.org/10.1101/691659
+Otte, K. A., & C. Schlötterer, 2020. Detecting selected haplotype blocks in evolve and resequence experiments. Molecular Ecology Resources 93–109. https://doi.org/10.1111/1755-0998.13244
 
 Susanne U. Franssen, Nicholas H. Barton, Christian Schlötterer, Reconstruction of Haplotype-Blocks Selected during Experimental Evolution, Molecular Biology and Evolution, Volume 34, Issue 1, January 2017, Pages 174–184, https://doi.org/10.1093/molbev/msw210
 
