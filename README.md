@@ -2,7 +2,7 @@
 
 ## Installation
 
-Before installing haplovalidate you need to make sure that all the dependencies are available. Please make sure to get the latest haploReconstruct from github https://github.com/popgenvienna/haploReconstruct . Haplovalidate will NOT WORK with the current CRAN haploreconstruct version 0.1.2 . 
+Before installing haplovalidate you need to make sure that all the dependencies are available. Please get the latest haploReconstruct from github https://github.com/popgenvienna/haploReconstruct . Haplovalidate will NOT WORK with the current CRAN haploreconstruct version 0.1.2 . 
 
      R (>= 3.6.0)
      psych (>= 1.8.12)
@@ -35,7 +35,7 @@ You need an object containing your allele frequencies in haploReconstruct format
     cands.all <- sync_to_frequencies(syncfile,base.pops=base.pops,header=FALSE,mincov=15,polaRise = polaRise)
    
 You also need an object with the results of a CMH-Test (for a method incoprorating genetic drift and poolSeq noise see https://github.com/popgenvienna/ACER).
-The object sould be a data.frame or data.table object containing chromosome and position (matching the candidates) and the corresponding CMH score (-log10(p-value))
+The object sould be a data.frame or data.table object containing chromosome and position (matching the candidates) and the corresponding CMH score (-log10(p-value)). Please remove missing values. 
  
     ## column names should be chr, pos and score 
     cmh <- readRDS("cmh.rds") 
