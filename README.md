@@ -68,7 +68,7 @@ You need to filter for SNPs with a significant allele frequency change
      parameters <- get.mncs.win(cands,cmh,wins=seq(0.1,10,0.05),mncs=0.01)
      print(parameters)
 
-     happy <- haplovalidate(cands,cmh,parameters,repl,gens,takerandom=2000,filterrang=5000)
+     happy <- haplovalidate(cands,cmh,parameters,repl,gens,takerandom=2000,filterrange=5000)
 
      plot.haplovalidate(blocks=happy$dominant_haplotypes,cmh,title="My beautiful haplotype blocks",label=TRUE)
      
