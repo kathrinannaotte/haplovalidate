@@ -3,10 +3,10 @@
 
 
 
-haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom=2000,filterrange=5000){
+haplovalidate <- function(cands,cmh,parameters,pop.ident,pop.generation,base.pops,compare,takerandom=2000,filterrange=5000){
 
-    base.pops <- c(rep(TRUE, length(repl)), rep(FALSE, length(repl) * (length(gens) -  1)))
-    compare <- c(rep(rep(TRUE, length(gens)), length(repl)))
+    base.pops <- base.pops
+    compare <- compare
 ### haploReconstruct parameters
     min.minor.freq <- 0
     max.minor.freq <- 1
@@ -23,7 +23,7 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom=2000,filterr
     rawsteps=0.1
     finesteps=0.01
 ###functions
-    ##asin sqrt transform allele frequency for normality 
+    ##asin sqrt transform allele frequency for normality
     transform.af <- function(af) {
         af.sqrt <- asin(sqrt(af))
         af.transf <- t(af.sqrt)
@@ -42,7 +42,7 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom=2000,filterr
         }
         cluster.af <- sub[, afcolis, with = FALSE]
         cluster.scale <- transform.af(cluster.af)
-        clustcor.sub <- median(cor(cluster.scale.i, cluster.scale), 
+        clustcor.sub <- median(cor(cluster.scale.i, cluster.scale),
                                na.rm = TRUE)
         return(clustcor.sub)
     }
@@ -61,11 +61,12 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom=2000,filterr
                                                           pos = cands[chr == d, pos],
                                                           base.freq = cands[chr == d, basePops],
                                                           lib.freqs = cands[chr == d, afcolis, with = F],
-                                                          pop.ident = c(rep(repl, each = length(gens))),
-                                                          pop.generation = rep(gens, length(repl)), 
-                                                          use.libs = compare, min.minor.freq = min.minor.freq, 
-                                                          max.minor.freq = max.minor.freq, winsize = winsize, 
-                                                          win.scale = "bp", min.lib.frac = min.lib.frac, minfreqchange = minfreqchange, 
+                                                          pop.ident = pop.ident,
+                                                          pop.generation = pop.generation,
+                                                          use.libs = compare,
+                                                          min.minor.freq = min.minor.freq,
+                                                          max.minor.freq = max.minor.freq, winsize = winsize,
+                                                          win.scale = "bp", min.lib.frac = min.lib.frac, minfreqchange = minfreqchange,
                                                           minrepl = minrepl),silent=T)
         }
 
@@ -77,8 +78,8 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom=2000,filterr
             ts <- ts.filter[[chromo]]
             for (c in rev(seq(cor.low, cor.high, 0.1))) {
                 print(paste("chr ", chromo, " cluster corr ", c, sep = ""))
-                hbs <- reconstruct_hb(ts, chrom = chromo, min.cl.size = min.cl.size, 
-                                      min.cl.cor = c, min.inter = min.inter, single.win = T, 
+                hbs <- reconstruct_hb(ts, chrom = chromo, min.cl.size = min.cl.size,
+                                      min.cl.cor = c, min.inter = min.inter, single.win = T,
                                       transf = TRUE, arcsine = TRUE, scaleSNP = TRUE)
                 print(paste("found ", number_hbr(hbs), " clusters", sep = ""))
                 if (number_hbr(hbs) > 0) {
@@ -103,7 +104,7 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom=2000,filterr
         for (a in chromis) {
             ## find corr to start
             check.cor.sub <- check.cor[chr != a & N != 0, corr]
-            min.cl.cor <- as.numeric(check.cor[chr == a & corr %in% check.cor.sub, 
+            min.cl.cor <- as.numeric(check.cor[chr == a & corr %in% check.cor.sub,
                                                corr[which.max(N)]])
             ## step parameters for raw and fine comparison
             ## rawsteps <- 0.05
@@ -117,15 +118,15 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom=2000,filterr
             old.cl.cor <- 0
             countup <- 0
 
-            
+
             while (clusteron) {
                 alreadythere <- cluster.snps[corr == min.cl.cor]
                 if (nrow(alreadythere) == 0) {
 ### get clusters per chromosome for focal correlation
                     for (b in chromis) {
                         ts <- ts.filter[[b]]
-                        hbs <- reconstruct_hb(ts, chrom = b, min.cl.size = min.cl.size, 
-                                              min.cl.cor = min.cl.cor, min.inter = min.inter, single.win = T, 
+                        hbs <- reconstruct_hb(ts, chrom = b, min.cl.size = min.cl.size,
+                                              min.cl.cor = min.cl.cor, min.inter = min.inter, single.win = T,
                                               transf = TRUE, arcsine = TRUE, scaleSNP = TRUE)
                                         # print(paste('corr',min.cl.cor))
                         print(paste("found ", number_hbr(hbs), " clusters", sep = ""))
@@ -144,7 +145,7 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom=2000,filterr
                 }            else{
                     print(paste("chr",a,"corr",unique(alreadythere$corr)))
                     print(paste("found ", length(unique(alreadythere$clust)), " clusters", sep = ""))
-                }           
+                }
                 ## ### clusters found on both chromosomes?
                 ids <- cluster.snps[, .(chr, corr, clust)]
                 taggis <- apply(ids, 1, paste, collapse = "_")
@@ -153,11 +154,11 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom=2000,filterr
                 check.cluster.snps.sub <- cluster.snps.sub[, .N, by = chr]
                 if (nrow(check.cluster.snps.sub) > 1) {
                     cluster.snps.sub[, `:=`(pos, as.numeric(pos))]
-                    cluster.ord <- cluster.snps.sub[order(as.numeric(pos)), 
+                    cluster.ord <- cluster.snps.sub[order(as.numeric(pos)),
                                                     .SD, by = .(chr, corr)]
                     ids <- cluster.ord[, .(chr, corr, clust)]
                     taggis <- apply(ids, 1, paste, collapse = "_")
-                    cand.clust <- merge(cluster.ord, cands, by = c("chr", 
+                    cand.clust <- merge(cluster.ord, cands, by = c("chr",
                                                                    "pos"))
                     clust.tags.foc <- unique(cand.clust[chr == a, tag])
                     clust.tags <- unique(cand.clust[, tag])
@@ -180,10 +181,10 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom=2000,filterr
                         cluster.scale.i <- transform.af(cluster.af.i)
 ### find the neighbouring clusters in winsize
                         minmax <- cand.clust[tag == i, .(min(pos), max(pos))]
-                        left <- na.exclude(unique(c(rev(cand.clust[chr == a & 
-                                                                   pos >= minmax[, V1] - winsize & pos < minmax[, V2], 
+                        left <- na.exclude(unique(c(rev(cand.clust[chr == a &
+                                                                   pos >= minmax[, V1] - winsize & pos < minmax[, V2],
                                                                    tag]))))
-                        right <- na.exclude(unique(cand.clust[chr == a & pos > 
+                        right <- na.exclude(unique(cand.clust[chr == a & pos >
                                                               minmax[, V2] & pos <= minmax[, V2] + winsize, tag]))
                         neighbours <- unique(c(left[left != i], right))
 ### check if comparison is already, only do it once!
@@ -194,7 +195,7 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom=2000,filterr
                                 check2 <- combi.tab.sub[, 2] %in% combi.tab[, 1]
                                 red.indi <- apply(cbind(check1, check2), 1, all)
                                 combis <- combi.tab.sub[red.indi == F, "neighbours"]
-                                combi.tab <- rbind(combi.tab, combi.tab.sub[red.indi == 
+                                combi.tab <- rbind(combi.tab, combi.tab.sub[red.indi ==
                                                                             F, ])
                             } else {
                                 combis <- combi.tab.sub[, "neighbours"]
@@ -204,10 +205,10 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom=2000,filterr
                             combis <- c()
                         }
 ### add clusters from other chr for comparison
-                        compare.raw <- clust.tags[grep(paste("^", a, sep = ""), 
+                        compare.raw <- clust.tags[grep(paste("^", a, sep = ""),
                                                        clust.tags, invert = T)]
                         compare.clust <- c(combis, compare.raw)
-### 
+###
                         clustcor <- sapply(compare.clust, comclust,cand.clust,takerandom,afcolis)
 ### separate intra and inter cluster comparison
                         corfoc <- c(corfoc,na.exclude(clustcor[compare.clust %in% combis]))
@@ -261,16 +262,16 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom=2000,filterr
                         }
                     }
                     else{
-                        if (raw) 
+                        if (raw)
                             min.cl.cor <- min.cl.cor - rawsteps
-                        else 
+                        else
                             min.cl.cor <- min.cl.cor - finesteps
                     }
                 }
                 else{
-                    if (raw) 
+                    if (raw)
                         min.cl.cor <- min.cl.cor - rawsteps
-                    else 
+                    else
                         min.cl.cor <- min.cl.cor - finesteps
                 }
                 if (search) {
@@ -307,9 +308,9 @@ haplovalidate <- function(cands,cmh,parameters,repl,gens,takerandom=2000,filterr
             x.sub <- final[tag == i]
             minmax <- x.sub[, .(min(pos), max(pos))]
             chr.sub <- unique(x.sub$chr)
-            maxtag <- datcmh.ord[pos >= minmax[, V1] - filterrange & pos <= minmax[, 
+            maxtag <- datcmh.ord[pos >= minmax[, V1] - filterrange & pos <= minmax[,
                                                                                    V2] + filterrange & chr == chr.sub & is.na(tag) == F, tag[which.max(score)]]
-            if (i != maxtag) 
+            if (i != maxtag)
                 datcmh.ord[tag == i, `:=`(tag, NA)]
         }
         mergomat <- datcmh.ord[, .(chr, pos, score, tag)]
