@@ -56,7 +56,7 @@ The object should be a data.frame or data.table object containing chromosome and
 You need to filter for SNPs with a significant allele frequency change
 
     cmh05 <- cmh[score> 1.3,.(chr,pos)] ## p-value < 0.05 
-    cands <- merge(cands.all,cmh05,by=.(chr,pos))
+    cands <- merge(cands.all,cmh05,on=.(chr,pos))
     saveRDS(cands,"cands.rds")
     
 ## Usage
